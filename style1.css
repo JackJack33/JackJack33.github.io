@@ -28,7 +28,12 @@ p {
   cursor: pointer;
 }
 
-.button:hover {
+.button1 {
+  background-color: white;
+  color: black;
+}
+
+.button1:hover {
   background-color: #303030;
   color: white;
 }
