@@ -5,11 +5,23 @@
 </head>
 
 <body>
+
+<script>
+function moreToby() {
+  var element = document.createElement('p');
+  element.innerHTML = 'toby is nerd'
+  document.getElementById("p1").appendChild(element);
+}
+</script>
+
 <h1>Toby</h1>
 
-<button class="button button1">button</button>
+<button class="button button1" onclick="moreToby()">button</button>
 
-<p>toby is nerd x5</p>
+<div id="p1">
+<p>toby is nerd</p>
+</div>
+  
 </body>
   
 </html>
