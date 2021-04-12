@@ -36,5 +36,9 @@ p {
 .button1:hover {
   background-color: #303030;
   color: white;
-  box-shadow: 0 4px 16px 0 rgba(0,0,0,0.24),0 17px 20px 0 rgba(0,0,0,0.19);
+}
+
+.button1:active {
+  background-color: #050505;
+  color: gray
 }
