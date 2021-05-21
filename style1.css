@@ -9,6 +9,10 @@ a {
   color: deepskyblue;
 }
 
+li {
+  margin-bottom: 1rem;
+}
+
 code {
   color: lightgreen;
 }
