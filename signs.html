@@ -24,7 +24,7 @@ this script, it is not their responsibility :)!</p>
 
 <p>For some animations, the playback rate might be too slow or too fast. In order to change this, look at the sign and run <code>/jas setrate (integer)</code>.<br>This will set the playback rate in ticks per frame (tpf) to the selected integer (between 1 and 20 inclusive only!).
 
-<p>Another common feature of animations is the custom color field, notated by <code>\a(integer)</code> (ex: <code>\a1 \a5 \a12</code>)<br>You can change the applied color of this field using the command <code>/jas.setcol (integer) (hex)</code> while looking at the sign.<br>Note that some signs might look weird if you do not apply custom colors to needed fields. Below is<br>an example of a broken sign and a working sign.</p>
+<p>Another common feature of animations is the custom color field, notated by <code>\a(integer)</code> (ex: <code>\a1 \a5 \a12</code>)<br>You can change the applied color of this field using the command <code>/jas setcol (integer) (hex)</code> while looking at the sign.<br>Note that some signs might look weird if you do not apply custom colors to needed fields. Below is<br>an example of a broken sign and a working sign.</p>
 <img src="./images/signs/broken.png" alt="Broken Sign">
 <img src="./images/signs/working.png" alt="Working Sign">
 
@@ -44,7 +44,7 @@ this script, it is not their responsibility :)!</p>
   <li><code>\a</code> - Abbreviates a custom color (see above)</li>
 </ul>
 
-<p>These abbreviations are used in conjunction with the actual text on the sign to form a<br>single string, or line of text, that represents the sign. You can test what this text will<br>look like by running <code>/jas.tostring</code> while looking at any sign. Additionally, these codes can<br>be used while making your own frames to achieve cool effects!<p>
+<p>These abbreviations are used in conjunction with the actual text on the sign to form a<br>single string, or line of text, that represents the sign. You can test what this text will<br>look like by running <code>/jas tostring</code> while looking at any sign. Additionally, these codes can<br>be used while making your own frames to achieve cool effects!<p>
   
 <h3>Creating Frames</h3>
 <p>Next what you will want to do is create each frame of your desired animation. You can do this several different ways,<br>but I prefer to create a line of signs so I can see what going from one frame to the next might look like.</p>
@@ -60,7 +60,7 @@ this script, it is not their responsibility :)!</p>
   <li><code style="color:lightsalmon">jas.admin</code> - <code>/jas resumesigns</code> - Resumes all sign animations.</li>
   <li style="color:lightskyblue"><code style="color:lightsalmon">jas.admin</code> - <code>/jas tosign (string)</code> - Sets the target sign to have the input text. Useful for testing abbreviations.</li>
   <li><code style="color:lightsalmon">jas.anim</code> - <code>/jas animstart</code> - Starts the frame recording process.</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.anim</code> - <code>/jas. animsave (anim name)</code> - Saves the recorded frames into an animation/type.</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.anim</code> - <code>/jas animsave (anim name)</code> - Saves the recorded frames into an animation/type.</li>
   <li><code style="color:lightsalmon">jas.anim</code> - <code>/jas animquit</code> - Quits the frame recording process.</li>
   <li style="color:lightskyblue"><code style="color:lightsalmon">jas.delete</code> - <code>/jas delete (anim name)</code> - Deletes the selected animation (Cannot be undone).</li>
   <li><code style="color:lightsalmon">jas.modify</code> - <code>/jas settype</code> - Opens a GUI with all of the server's animations. Click an item to set the selected sign's animation</li>
