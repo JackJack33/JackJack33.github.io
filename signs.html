@@ -19,10 +19,10 @@ this script, it is not their responsibility :)!</p>
 <img src="./images/signs/sign1.png" alt="Sign Before">
 <img src="./images/signs/sign2.png" alt="Sign After">
 
-<p>In order to give the sign an animation, simply look at the sign run the command <code>/jas.settype</code> <br>and select a type from the GUI. Note that in order to do this you must either be the<br>owner of the sign, or be an operator. <br>Clicking the item will close the GUI and start the animation.</p>
+<p>In order to give the sign an animation, simply look at the sign run the command <code>/jas settype</code> <br>and select a type from the GUI. Note that in order to do this you must either be the<br>owner of the sign, or be an operator. <br>Clicking the item will close the GUI and start the animation.</p>
 <img src="./images/signs/typegui.png" alt="Type GUI">
 
-<p>For some animations, the playback rate might be too slow or too fast. In order to change this, look at the sign and run <code>/jas.setrate (integer)</code>.<br>This will set the playback rate in ticks per frame (tpf) to the selected integer (between 1 and 20 inclusive only!).
+<p>For some animations, the playback rate might be too slow or too fast. In order to change this, look at the sign and run <code>/jas setrate (integer)</code>.<br>This will set the playback rate in ticks per frame (tpf) to the selected integer (between 1 and 20 inclusive only!).
 
 <p>Another common feature of animations is the custom color field, notated by <code>\a(integer)</code> (ex: <code>\a1 \a5 \a12</code>)<br>You can change the applied color of this field using the command <code>/jas.setcol (integer) (hex)</code> while looking at the sign.<br>Note that some signs might look weird if you do not apply custom colors to needed fields. Below is<br>an example of a broken sign and a working sign.</p>
 <img src="./images/signs/broken.png" alt="Broken Sign">
@@ -50,24 +50,24 @@ this script, it is not their responsibility :)!</p>
 <p>Next what you will want to do is create each frame of your desired animation. You can do this several different ways,<br>but I prefer to create a line of signs so I can see what going from one frame to the next might look like.</p>
 <img src="./images/signs/frames.png" alt="Line of Frames" width="1000px">
   
-<p>Once you've created all your desired frames, run the command <code>/jas.animstart</code>. Then, punch each<br>sign <b>once</b> in the order of your animation.</p>
-<p>When you finish, run the command <code>/jas.animsave (anim name)</code>, making sure to enter a name for the animation.<br>You can then run <code>/jas.animquit</code>. Congratulations, you have created your first animation!<br>You can now select this animation from the types menu.</p>
+<p>Once you've created all your desired frames, run the command <code>/jas animstart</code>. Then, punch each<br>sign <b>once</b> in the order of your animation.</p>
+<p>When you finish, run the command <code>/jas animsave (anim name)</code>, making sure to enter a name for the animation.<br>You can then run <code>/jas animquit</code>. Congratulations, you have created your first animation!<br>You can now select this animation from the types menu.</p>
   
 <h2>Commands, Permissions, & Such</h2>
 <ul>
   <li><code style="color:lightsalmon">PERMISSION</code> - <code>COMMAND</code> - Description</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.admin</code> - <code>/jas.haltsigns</code> - Stops all signs immediately. Use this in conjunction with the next command to debug signs quickly.</li>
-  <li><code style="color:lightsalmon">jas.admin</code> - <code>/jas.resumesigns</code> - Resumes all sign animations.</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.admin</code> - <code>/jas.tosign (string)</code> - Sets the target sign to have the input text. Useful for testing abbreviations.</li>
-  <li><code style="color:lightsalmon">jas.anim</code> - <code>/jas.animstart</code> - Starts the frame recording process.</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.anim</code> - <code>/jas.animsave (anim name)</code> - Saves the recorded frames into an animation/type.</li>
-  <li><code style="color:lightsalmon">jas.anim</code> - <code>/jas.animsquit</code> - Quits the frame recording process.</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.delete</code> - <code>/jas.delete (anim name)</code> - Deletes the selected animation (Cannot be undone).</li>
-  <li><code style="color:lightsalmon">jas.modify</code> - <code>/jas.settype</code> - Opens a GUI with all of the server's animations. Click an item to set the selected sign's animation</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.modify</code> - <code>/jas.setcol (integer) (hex)</code> - Sets the value of a custom color per sign. See above.</li>
-  <li><code style="color:lightsalmon">jas.modify</code> - <code>/jas.setrate (tpf)</code> - Sets the playback rate in ticks per frame.</li>
-  <li style="color:lightskyblue"><code style="color:lightsalmon">NONE</code> - <code>/jas.tostring</code> - Sends a string in chat of the target sign.</li>
-  <li><code style="color:lightsalmon">NONE</code> - <code>/jas.help</code> - Redirects to this webpage.</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.admin</code> - <code>/jas haltsigns</code> - Stops all signs immediately. Use this in conjunction with the next command to debug signs quickly.</li>
+  <li><code style="color:lightsalmon">jas.admin</code> - <code>/jas resumesigns</code> - Resumes all sign animations.</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.admin</code> - <code>/jas tosign (string)</code> - Sets the target sign to have the input text. Useful for testing abbreviations.</li>
+  <li><code style="color:lightsalmon">jas.anim</code> - <code>/jas animstart</code> - Starts the frame recording process.</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.anim</code> - <code>/jas. animsave (anim name)</code> - Saves the recorded frames into an animation/type.</li>
+  <li><code style="color:lightsalmon">jas.anim</code> - <code>/jas animquit</code> - Quits the frame recording process.</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.delete</code> - <code>/jas delete (anim name)</code> - Deletes the selected animation (Cannot be undone).</li>
+  <li><code style="color:lightsalmon">jas.modify</code> - <code>/jas settype</code> - Opens a GUI with all of the server's animations. Click an item to set the selected sign's animation</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">jas.modify</code> - <code>/jas setcol (integer) (hex)</code> - Sets the value of a custom color per sign. See above.</li>
+  <li><code style="color:lightsalmon">jas.modify</code> - <code>/jas setrate (tpf)</code> - Sets the playback rate in ticks per frame.</li>
+  <li style="color:lightskyblue"><code style="color:lightsalmon">NONE</code> - <code>/jas tostring</code> - Sends a string in chat of the target sign.</li>
+  <li><code style="color:lightsalmon">NONE</code> - <code>/jas help</code> - Redirects to this webpage.</li>
 </ul>
 </body>
   
