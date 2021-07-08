@@ -2,6 +2,8 @@ body {
   background-color: #101010;
   background-image: url("images/bg/stone.png");
   background-repeat: repeat;
+  background-size: 45px;
+  background-blend-mode: color-dodge;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
   margin-left: 20px;
@@ -46,6 +48,7 @@ p {
   margin: 2px 20px;
   transition-duration: 0.1s;
   cursor: pointer;
+  border-radius: 0.5rem;
 }
 
 .button1 {
@@ -56,6 +59,7 @@ p {
 .button1:hover {
   background-color: #303030;
   color: white;
+  margin-top: 0px;
 }
 
 .button1:active {
