@@ -1,6 +1,6 @@
 body {
   background-color: #101010;
-  background-image: images/bg/stone.png;
+  background-image: url("images/bg/stone.png");
   background-repeat: repeat;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
