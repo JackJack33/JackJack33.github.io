@@ -1,0 +1,77 @@
+on load:
+	set {jlppref} to "j.lp"
+	send "&7[%{jlppref}%&7] Initializing Jack's Launch Pads..." to all players where [input is an op]
+	set {%{jlppref}%.type::wood::*} to 0.5 and 1 if {%{jlppref}%.type::wood::*} is not set
+	set {%{jlppref}%.type::iron::*} to 1 and 3 if {%{jlppref}%.type::iron::*} is not set
+	set {%{jlppref}%.type::gold::*} to 1.5 and 9 if {%{jlppref}%.type::gold::*} is not set
+	delete {%{jlppref}%.launch::*}
+	send "&7[%{jlppref}%&7] Done." to all players where [input is an op]
+
+command /jlp [<string>] [<string>] [<string>] [<number>]:
+	trigger:
+		set {_tar} to arg-1 ? "help"
+		if {_tar} = "help":
+			send formatted "&eNeed help with Launch Pads? Visit &6&n<link:https://jackjack.club/launch>jackjack.club/launch"
+		else if {_tar} = "view":
+			if player is not op:
+				send "&cError: &7You do not have permission to run this command"
+				stop
+			loop (indexes of {%{jlppref}%.type::*}):
+				send "&f%loop-value%&f: &7%{%{jlppref}%.type::%loop-value%::1}% &7up, %{%{jlppref}%.type::%loop-value%::2}% &7forward"
+		else if {_tar} = "set":
+			if player is not op:
+				send "&cError: &7You do not have permission to run this command"
+				stop
+			set {_oml::*} to " wood", " iron", and " gold"
+			set {_oml2::*} to " up" and " forward"
+			if {_oml::*} does not contain " %arg-2%":
+				send "&cUsage: &f/jlp set &3<&bwood&3|&biron&3|&bgold&3> &2<&aup&2|&aforward&2> &e<number>"
+				stop
+			if {_oml2::*} does not contain " %arg-3%":
+				send "&cUsage: &f/jlp set &3<&bwood&3|&biron&3|&bgold&3> &2<&aup&2|&aforward&2> &e<number>"
+				stop
+			set {_tar} to 1 if arg-3 = "up"  else 2
+			set {%{jlppref}%.type::%arg-2%::%{_tar}%} to arg-4
+			send "&7Set force &f%arg-3% &7of &f%arg-2% &flaunch pads &7to &f%arg-4%"
+
+on tab complete of "/jlp":
+	add "help" to {_t::*}
+	if player is op:
+		add "view" and "set" to {_t::*}
+	set tab completions for position 1 to {_t::*}
+
+on disconnect:
+	remove player's uuid from {%{jlppref}%.launch::*}
+
+function jlpLaunch(p: player, t: string):
+	{%{jlppref}%.launch::*} does not contain {_p}'s uuid
+	add {_p}'s uuid to {%{jlppref}%.launch::*}
+	push {_p} up at speed {%{jlppref}%.type::%{_t}%::1}
+	push {_p} in horizontal direction of {_p} at speed {%{jlppref}%.type::%{_t}%::2}
+	play sound "entity.blaze.shoot" to {_p}
+	wait 5 ticks
+	remove {_p}'s uuid from {%{jlppref}%.launch::*}
+
+on step on planks:
+	block above event-block is wooden pressure plate
+	set {_b} to block below event-block
+	add 1 to {_c} if {_b} is redstone powered
+	add 1 to {_c} if {_b} is redstone torch or redstone block
+	{_c} > 0
+	jlpLaunch(player, "wood")
+
+on step on iron block:
+	block above event-block is iron pressure plate
+	set {_b} to block below event-block
+	add 1 to {_c} if {_b} is redstone powered
+	add 1 to {_c} if {_b} is redstone torch or redstone block
+	{_c} > 0
+	jlpLaunch(player, "iron")
+
+on step on gold block:
+	block above event-block is gold pressure plate
+	set {_b} to block below event-block
+	add 1 to {_c} if {_b} is redstone powered
+	add 1 to {_c} if {_b} is redstone torch or redstone block
+	{_c} > 0
+	jlpLaunch(player, "gold")
