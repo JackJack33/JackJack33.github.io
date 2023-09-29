@@ -1,0 +1,72 @@
+on load:
+	set {jfpref} to "j.fir"
+	send "&7[%{jfpref}%&7] Initializing Fireworks Plus..." to all players where [input is an op]
+	set {%{jfpref}%.wm} to "&7FireworksPlus Item"
+	set {_fu} to string named "&aFuse" with lore {%{jfpref}%.wm}
+	set {_fc} to snowball named "&aFirecracker" with lore {%{jfpref}%.wm}
+	set {_po} to snowball named "&aPopper" with lore {%{jfpref}%.wm}
+	set {_zi} to snowball named "&aZipper" with lore {%{jfpref}%.wm}
+	set {_fo} to nether quartz named "&aFountain" with lore {%{jfpref}%.wm}
+	set {_sp} to stick named "&aSparkler" with lore {%{jfpref}%.wm}
+	register new shapeless recipe for {_fu} using gunpowder and string with id "%{jfpref}%_fu"
+	register new shapeless recipe for {_fc} using {_fu}, gunpowder, and clay ball with id "%{jfpref}%_fc"
+	register new shapeless recipe for {_po} using gunpowder with id "%{jfpref}%_po"
+	register new shapeless recipe for {_zi} using gunpowder, glowstone dust, and {_fc} with id "%{jfpref}%_zi"
+	register new shapeless recipe for {_fo} using gunpowder, glowstone dust, blaze powder, and {_fu} with id "%{jfpref}%_fo"
+	register new shapeless recipe for {_sp} using gunpowder and stick with id "%{jfpref}%_sp"
+	send "&7[%{jfpref}%&7] Done." to all players where [input is an op]
+
+command /fireworkhelp:
+	trigger:
+		send formatted "&eNeed help with Fireworks Plus? Visit &6&n<link:https://jackjack.club/fireworks>jackjack.club/fireworks"
+
+on right click:
+	set {_t} to player's tool
+	name of {_t} = "&aSparkler"
+	remove 1 of {_t} from player
+	play sound "entity.firework_rocket.launch" at player
+	loop 100 times:
+		set {_loc} to location 2 in player's direction from head location of player
+		play 3 of firework at {_loc} offset by vector(0,0,0) with extra 0.1
+		wait 2 tick
+
+on dispense:
+	lore of event-item contains {%{jfpref}%.wm}
+	set {_loc} to location of event-block
+	if name of event-item != "&aFountain":
+		set {%{jfpref}%.next} to event-item
+		wait 1 tick
+		delete {%{jfpref}%.next}
+	else if name of event-item = "&aFountain":
+		cancel event
+		remove 1 of event-item from event-block's inventory
+		loop 20 times:
+			summon firework rocket at location 1 above event-block
+			set {_r} to random integer between 0 and 16777125
+			add "{LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1b,Colors:[I;%{_r}%]}]}}}}" to nbt of last spawned firework rocket
+			wait 5 tick
+
+on shoot:
+	if "%shooter%" = "<none>":
+		set metadata value "fwp" of projectile to {%{jfpref}%.next}
+	else if shooter is a player:
+		set metadata value "fwp" of projectile to 1 of shooter's tool
+
+on projectile hit:
+	set {_md} to metadata value "fwp" of projectile
+	{_md} is set
+	set {_r} to random integer between 0 and 16777215
+	if name of {_md} = "&aFirecracker":
+		summon firework rocket at event-location
+		add "{Silent:1b,LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Flicker:1b,Colors:[I;%{_r}%]}]}}}}" to nbt of last spawned firework rocket
+	else if name of {_md} = "&aZipper":
+		summon firework rocket at event-location
+		set {_e} to last spawned firework rocket
+		add "{Silent:1b,LifeTime:40}" to nbt of {_e}
+		while {_e} is alive:
+			summon firework rocket at location of {_e}
+			add "{LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1b,Colors:[I;%{_r}%]}]}}}}" to nbt of last spawned firework rocket
+			wait 5 tick
+	else if name of {_md} = "&aPopper":
+		summon firework rocket at event-location
+		add "{Silent:1b,LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;16777215]}]}}}}" to nbt of last spawned firework rocket
