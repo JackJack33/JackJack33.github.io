@@ -1,0 +1,422 @@
+on load:
+	set {jaspref} to "j.as"
+	send "&7[%{jaspref}%&7] Initializing Jack's Animated Signs..." to all players where [input is an op]
+	set {%{jaspref}%.anims::Numpad::*}  to "\a11\s\a22\s3\n\a24\s5\s6\n\a27\s8\s9\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s5\s\a16\n\a27\s8\s9\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s5\s6\n\a27\s8\s9\n\a2*\s\a10\s\a2##", "\a21\s2\s3\n\a24\s5\s6\n\a17\s\a28\s9\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s5\s6\n\a27\s8\s\a19\n\a2*\s0\s##", "\a21\s2\s3\n\a14\s\a25\s6\n\a27\s8\s9\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s5\s6\n\a27\s8\s9\n\a2*\s0\s\a1##", "\a21\s2\s\a13\n\a24\s5\s6\n\a27\s8\s9\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s5\s6\n\a27\s\a18\s\a29\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s\a15\s\a26\n\a27\s8\s9\n\a2*\s0\s##", "\a21\s2\s3\n\a24\s5\s6\n\a27\s8\s9\n\a1*\s\a20\s##", and "\a21\s\a12\s\a23\n\a24\s5\s6\n\a27\s8\s9\n\a2*\s0\s##"
+	set {%{jaspref}%.anims::Smiley::*}  to "\n\a1|\s|\n\a1\__/\n", "\n\a1_\s_\n\a1\__/\n", and "\n\a1|\s|\n\a1\__/\n"
+	set {%{jaspref}%.anims::Loading::*} to "\n\a2o\s\a1O\s\a2o\n\n", "\n\a2o\so\s\a1O\n\n", "\n\a2o\s\a1O\s\a2o\n\n", and "\n\a1O\s\a2o\so\n\n"
+	set {%{jaspref}%.types::*} to "Numpad", "Smiley", and "Loading" if {%{jaspref}%.types::*} is not set
+	send "&7[%{jaspref}%&7] Done, registered %size of {%{jaspref}%.types::*}% &7sign types." to all players where [input is an op]
+	if {%{jaspref}%.do} is not set:
+		set {%{jaspref}%.do} to true
+	{%{jaspref}%.do} is true
+	jasStartSigns(1, 1)
+	jasStartSigns(0, 1)
+
+on disconnect:
+	delete {%{jaspref}%.temp::%player's uuid%::*}
+	delete {%{jaspref}%.clipboard::%player's uuid%::*}
+	remove player's uuid from {%{jaspref}%.create::*}
+
+function jasStartSigns(i: integer = 0, b: integer = 0):
+	if {_i} = 1:
+		set {%{jaspref}%.do} to false
+		send "&7[%{jaspref}%&7] Halting Animations" to all players where [input is an op] if {_b} = 0
+		stop
+	else if {_i} = 0:
+		set {%{jaspref}%.do} to true
+		send "&7[%{jaspref}%&7] Resuming Animations" to all players where [input is an op] if {_b} = 0
+	loop indexes of {%{jaspref}%.info::*}:
+		jasWhile(loop-value)
+
+function jasWhile(in: string):
+	set {_loc} to jasStringToLoc({_in})
+	set {_l} to jasLocToString({_loc})
+	{%{jaspref}%.info::%{_l}%::owner} is set
+	{%{jaspref}%.info::%{_l}%::type} is set
+	while {%{jaspref}%.do} is true:
+		stop if block at {_loc} is not sign
+		set {_f} to {%{jaspref}%.info::%{_l}%::rate} ? 10
+		set {_type} to {%{jaspref}%.info::%{_l}%::type}
+		stop loop if size of {%{jaspref}%.anims::%{_type}%::*} < 1
+		loop {%{jaspref}%.anims::%{_type}%::*}:
+			jasToSign({_loc}, loop-value)
+			wait "%{_f}% ticks" parsed as timespan
+			{%{jaspref}%.do} is false
+			stop loop
+
+#
+# Sign Events
+#
+
+on sign change:
+	line 1 contains "[JAS]"
+	set {_loc} to location of event-block
+	set {_l} to jasLocToString({_loc})
+	{%{jaspref}%.info::%{_l}%::owner} is not set
+	set {%{jaspref}%.info::%{_l}%::owner} to uuid of player
+	set line 1 to "&1[JAS]"
+	set line 2 to "Right-Click"
+	set line 3 to "to View"
+	set line 4 to ""
+
+on sign change:
+	set {_loc} to location of event-block
+	set {_l} to jasLocToString({_loc})
+	jasWhile({_l})
+
+on right click on sign:
+	set {_loc} to location of clicked block
+	set {_l} to jasLocToString({_loc})
+	{%{jaspref}%.info::%{_l}%::owner} is set
+	set {_o} to {%{jaspref}%.info::%{_l}%::owner} parsed as offlineplayer
+	set {_t} to {%{jaspref}%.info::%{_l}%::type} ? "NONE"
+	set {_f} to {%{jaspref}%.info::%{_l}%::rate} ? "10"
+	open virtual hopper inventory named "Animated Signs Menu" to player
+	format gui slot 0 of player with diamond named "&bLocation:" with lore "&7%{_loc}%"
+	format gui slot 1 of player with emerald named "&aOwner:" with lore "&7%{_o}%" and "&7%{%{jaspref}%.info::%{_l}%::owner}%"
+	format gui slot 2 of player with iron ingot named "&fType:" with lore "&7%{_t}%", "&fFramerate:", and "&7%{_f}%&7tpf"
+	loop {%{jaspref}%.info::%{_l}%::*}:
+		loop-index contains "c"
+		set {_in::*} to loop-index split at ""
+		set {_num} to {_in::2}
+		add "&7Color %{_num}%&7: %jasHex(loop-value, loop-value)%" to {_lore::*}
+	format gui slot 3 of player with gold ingot named "&6Colors:" with lore {_lore::*}
+	if player is an op:
+		set {_o} to player
+	if {_o} = player:
+		format gui slot 4 of player with barrier named "&cDelete" with lore "&7&o(Click)" to close:
+			jasDeleteSign({_loc})
+	else:
+		format gui slot 4 of player with structure void named "&3Error:" with lore "&7You do not own this sign," and "&7you cannot delete it."
+
+on break of sign:
+	set {_loc} to location of event-block
+	set {_l} to jasLocToString({_loc})
+	{%{jaspref}%.info::%{_l}%::owner} is set
+	send "&cNOTE: &7To fully delete a sign, right-click it and click the delete item."
+
+#
+# Functions
+#
+
+function jasDeleteSign(loc: location):
+		set {_l} to jasLocToString({_loc})
+		delete {%{jaspref}%.info::%{_l}%::*}
+		play sound "block.wood.break" at {_loc}
+		break block at {_loc}
+
+function jasCheckSign(p: player, loc: location) :: boolean:
+	set {_l} to jasLocToString({_loc})
+	set {_o} to {%{jaspref}%.info::%{_l}%::owner} parsed as offlineplayer
+	set {_o} to {_p} if {_p} has permission "jas.admin"
+	if block at {_loc} is not sign:
+		send "&cError: &7You must be looking at a sign!" to {_p}
+		return false
+	else if {%{jaspref}%.info::%{_l}%::owner} is not set:
+		send "&cError: &7You must be looking at an animated sign! Create one by writing &f[JAS] &7in the top line." to {_p}
+		return false
+	else if {_o} != {_p}:
+		send "&cError: &7You do not own this sign!" to {_p}
+		return false
+	return true
+
+function jasHex(s: string, h: string) :: string:
+	loop ({_h} split at ""):
+		set {_n} to "%{_n} ? ""§x""%§%loop-value%"
+	set {_n} to first 14 characters of {_n}
+	return colored "%{_n}%%{_s}%"
+
+function jasToString(loc: location) :: string:
+	set {_l} to jasLocToString({_loc})
+	loop 4 times:
+		set {_t} to line loop-number of block at {_loc}
+		if {_t} = "":
+			loop-number < 4
+			add "\n" to {_new::*}
+		else:
+			loop {%{jaspref}%.info::%{_l}%::*}:
+				loop-index contains "c"
+				set {_in::*} to loop-index split at ""
+				set {_num} to {_in::2}
+				replace all jasHex("", loop-value-2) with "\a%{_num}%" in {_t}
+			replace all " " with "\s" in {_t}
+			replace all "\s\s\s" with "\t" in {_t}
+			replace all "&" and "§" with "\c" in {_t}
+			if loop-number < 4:
+				add "%{_t}%\n" to {_new::*}
+			else:
+				add {_t} to {_new::*}
+	return join {_new::*}
+
+function jasToSign(loc: location, s: string):
+	set {_l} to jasLocToString({_loc})
+	set {_sp::*} to {_s} split at "\n"
+	loop (size of {_sp::*}) times:
+		set {_t} to {_sp::%loop-number%}
+		loop {%{jaspref}%.info::%{_l}%::*}:
+			loop-index contains "c"
+			set {_in::*} to loop-index split at ""
+			set {_num} to {_in::2}
+			replace all "\a%{_num}%" with colored "<##%loop-value-2%>" in {_t}
+		replace all "\t" with "\s\s\s" in {_t}
+		replace all "\s" with " " in {_t}
+		replace all "\c" with "§" in {_t}
+		set line loop-number of block at {_loc} to {_t}
+
+function jasCreateAnim(n: string, s: strings) :: boolean:
+	if indexes of {%{jaspref}%.anims::*} contains {_n}:
+		return false
+		stop
+	set {%{jaspref}%.anims::%{_n}%::*} to {_s::*}
+	add {_n} to {%{jaspref}%.types::*}
+	return true
+
+function jasDeleteAnim(n: string):
+	delete {%{jaspref}%.anims::%{_n}%::*}
+	remove {_n} from {%{jaspref}%.types::*}
+
+function jasLocToString(l: location) :: string:
+  return "%x-coord of {_l}%~%y-coord of {_l}%~%z-coord of {_l}%~%world of {_l}%"
+
+function jasStringToLoc(s: string) :: location:
+  set {_d::*} to split {_s} at "~"
+  return location({_d::1} parsed as number, {_d::2} parsed as number, {_d::3} parsed as number, world({_d::4}))
+
+#
+# Commands & Command Events
+#
+
+command /jas [<text>] [<text>] [<text>]:
+	trigger:
+		set {_a1} to arg-1 ? "help"
+		if {_a1} = "help":
+			send formatted "&eNeed help with Animated Signs? Visit &6&n<link:https://jackjack.club/signs>jackjack.club/signs"
+
+		else if {_a1} = "settype":
+			if player does not have permission "jas.modify":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			set {_tar} to arg-2 parsed as integer ? 1
+			set {_tar} to 1 if {_tar} < 1
+			set {_loc} to location of target block of player
+			set {_l} to jasLocToString({_loc})
+			jasCheckSign(player, {_loc}) = true
+			open virtual chest inventory with size 3 named "Types &cpg. %{_tar}%" to player
+			set {_t} to {%{jaspref}%.info::%{_l}%::type} ? "NONE"
+			loop 27 times:
+				set {_math} to loop-number + (27 * ({_tar} - 1))
+				{_math} <= (size of {%{jaspref}%.types::*})
+				set {_i} to {%{jaspref}%.types::%{_math}%}
+				{_i} is set
+				if {_i} = {_t}:
+					format gui slot loop-number - 1 of player with empty map named "&6%{%{jaspref}%.types::%{_math}%}%" with lore "&7Selected"
+				else:
+					format gui slot loop-number - 1 of player with paper named "&e%{%{jaspref}%.types::%{_math}%}%" with lore "&7&o(Click)" to close:
+						set {_l} to jasLocToString(location of target block of player)
+						set {_i} to {%{jaspref}%.types::%{_math}%}
+						if {%{jaspref}%.info::%{_l}%::type} is not set:
+							set {%{jaspref}%.info::%{_l}%::type} to {_i}
+							jasWhile({_l})
+						set {%{jaspref}%.info::%{_l}%::type} to {_i}
+						send "&7Set type of sign to &f%{_i}%&7!"
+
+		else if {_a1} = "setrate":
+			if player does not have permission "jas.modify":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			set {_loc} to location of target block of player
+			set {_l} to jasLocToString({_loc})
+			jasCheckSign(player, {_loc}) = true
+			set {_a2} to arg-2 parsed as integer
+			if {_a2} is not set:
+				send "&cUsage: &f/jas setrate &b<ticks per frame>"
+				stop
+			else if {_a2} < 1:
+				send "&cError: &7Ticks per frame must be above 0!"
+				stop
+			else if {_a2} > 20:
+				send "&cError: &7Ticks per frame must be below 21!"
+				stop
+			set {%{jaspref}%.info::%{_l}%::rate} to {_a2}
+			send "&7Set tpf of sign to &f%arg-2%&7!"
+
+		else if {_a1} = "setcol":
+			if player does not have permission "jas.modify":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			set {_loc} to location of target block of player
+			set {_l} to jasLocToString({_loc})
+			jasCheckSign(player, {_loc}) = true
+			set {_a2} to arg-2 parsed as integer
+			set {_a3} to arg-3 
+			if {_a2} is not set:
+				send "&cUsage: &f/jas setcol &a<ID> &b<hex>"
+				stop
+			else if {_a2} < 0:
+				send "&cError: &7Please use an integer > 0."
+				stop
+			else if {_a2} > 9:
+				send "&cError: &7Please use an integer < 10."
+				stop
+			if {_a3} is not set:
+				send "&cError: &7Please use a 6-character hexadecimal code (i.e. &fffffff&7)."
+				stop
+			else if length of {_a3} != 6:
+				send "&cError: &7Please use a 6-character hexadecimal code (i.e. &fffffff&7)."
+				stop
+			set {_hex} to "0123456789abcdef"
+			loop ({_a3} split at ""):
+				{_hex} does not contain loop-value
+				send "&cError: &7Please use hexadecimal characters only (0-9, a-f)."
+				stop
+			set {_c} to {_a3}
+			set {_col} to formatted jasHex({_c}, {_c})
+			send {_col}
+			set {%{jaspref}%.info::%{_l}%::c%{_a2}%} to {_a3}
+			send colored "&7Set color &a%{_a2}% &7of sign to %{_col}%&7!"
+
+		else if {_a1} = "copy":
+			if player does not have permission "jas.modify":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			set {_loc} to location of target block of player
+			set {_l} to jasLocToString({_loc})
+			jasCheckSign(player, {_loc}) = true
+			set {%{jaspref}%.clipboard::%player's uuid%::type} to {%{jaspref}%.info::%{_l}%::type}
+			set {%{jaspref}%.clipboard::%player's uuid%::rate} to {%{jaspref}%.info::%{_l}%::rate}
+			loop {%{jaspref}%.info::%{_l}%::*}:
+				loop-index contains "c"
+				set {%{jaspref}%.clipboard::%player's uuid%::%loop-index%} to {%{jaspref}%.info::%{_l}%::%loop-index%}
+			send "&7Copied sign properties to clipboard!"
+
+		else if {_a1} = "paste":
+			if player does not have permission "jas.modify":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			if {%{jaspref}%.clipboard::%player's uuid%::*} is empty:
+				send "&cError: &7You have nothing on your clipboard! Use &f/jas copy"
+				stop
+			set {_loc} to location of target block of player
+			set {_l} to jasLocToString({_loc})
+			jasCheckSign(player, {_loc}) = true
+			if {%{jaspref}%.info::%{_l}%::type} is not set:
+				set {_dow} to true
+			set {%{jaspref}%.info::%{_l}%::type} to {%{jaspref}%.clipboard::%player's uuid%::type}
+			set {%{jaspref}%.info::%{_l}%::rate} to {%{jaspref}%.clipboard::%player's uuid%::rate}
+			loop  {%{jaspref}%.clipboard::%player's uuid%::*}:
+				loop-index contains "c"
+				set {%{jaspref}%.info::%{_l}%::%loop-index%} to {%{jaspref}%.clipboard::%player's uuid%::%loop-index%}
+			send "&7Pasted sign properties!"
+			{_dow} is true
+			jasWhile({_l})
+			delete {_dow}
+
+		else if {_a1} = "tostring":
+			set {_loc} to location of target block of player
+			send jasToString({_loc})
+
+		else if {_a1} = "tosign":
+			if player does not have permission "jas.admin":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			add arg-2 to {_a::*} if arg-2 is set
+			add " %arg-3%" to {_a::*} if arg-3 is set
+			set {_a} to join {_a::*} by ""
+			if {_a} is not set:
+				send "&cUsage: &f/jas tosign &b<&aLINE&e\s\a2&aONE&e\n&aLINE&e\s\cf&aTWO&e\n\n&b>"
+				stop
+			set {_loc} to location of target block of player
+			jasToSign({_loc}, {_a})
+
+		else if {_a1} = "animstart":
+			if player does not have permission "jas.anim":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			if {%{jaspref}%.create::*} contains player's uuid:
+				send "&cError: &7You are already in anim edit mode!"
+				stop
+			add player's uuid to {%{jaspref}%.create::*}
+			send "&aYou have enabled animation mode. &7To quit, do &f/jas animquit"
+
+		else if {_a1} = "animquit":
+			if player does not have permission "jas.anim":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			if {%{jaspref}%.create::*} does not contain player's uuid:
+				send "&cError: &7You are not in anim edit mode!"
+				stop
+			remove player's uuid from {%{jaspref}%.create::*}
+			delete {%{jaspref}%.temp::%player's uuid%::*}
+			send "&aYou have quit animation mode. &7To enable, do &f/jas animstart"
+
+		else if {_a1} = "animsave":
+			if player does not have permission "jas.anim":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			set {_a2} to arg-2
+			if {%{jaspref}%.create::*} does not contain player's uuid:
+				send "&cError: &7You are not in anim edit mode!"
+				stop
+			else if {_a2} is not set:
+				send "&cUsage: &f/jas animsave &b<anim name>"
+				stop
+			else if (size of {%{jaspref}%.temp::%player's uuid%::*})  < 1:
+				send "&cError: &7No frames selected!"
+				stop
+			if jasCreateAnim({_a2}, {%{jaspref}%.temp::%player's uuid%::*}) = true:
+				send "&aCreated Anim &f%{_a2}%&7 with &f%size of {%{jaspref}%.temp::%player's uuid%::*}% &7frames!"
+			else:
+				send "&cError: &7The anim named &f%{_a2}% &7already exists!"
+
+		else if {_a1} = "delete":
+			if player does not have permission "jas.delete":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			set {_a2} to arg-2
+			if {_a2} is not set:
+				send "&cUsage: &f/jas delete &b<anim name>"
+				stop
+			else if {%{jaspref}%.types::*} does not contain {_a2}:
+				send "&cError: &7Anim &f%{_a2}% &7does not exist!"
+				stop
+			remove {_a2} from {%{jaspref}%.types::*}
+			jasDeleteAnim({_a2})
+			send "&7Deleted &f%{_a2}%&7!"
+
+		else if {_a1} = "haltsigns":
+			if player does not have permission "jas.admin":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			if {%{jaspref}%.do} is false:
+				send "&cError: &7Signs are already stopped."
+				stop
+			jasStartSigns(1)
+
+		else if {_a1} = "resumesigns":
+			if player does not have permission "jas.admin":
+				send "&cError: &7You do not have permission to run this command!"
+				stop
+			if {%{jaspref}%.do} is true:
+				send "&cError: &7Signs are already resumed."
+				stop
+			jasStartSigns()
+
+on tab complete of "/jas":
+	add "help" and "tostring" to {_t::*}
+	if player has permission "jas.modify":
+		add "copy", "paste", "settype", "setrate", and "setcol" to {_t::*}
+	if player has permission "jas.anim":
+		add "animstart", "animsave", and "animquit" to {_t::*}
+	if player has permission "jas.delete":
+		add "delete" to {_t::*}
+	if player has permission "jas.admin":
+		add "haltsigns", "resumesigns", and "tosign" to {_t::*}
+	set tab completions for position 1 to {_t::*}
+
+on click:
+	{%{jaspref}%.create::*} contains player's uuid
+	set {_loc} to location of player's target block
+	block at {_loc} is a sign
+	add jasToString({_loc}) to {%{jaspref}%.temp::%player's uuid%::*}
+	send "&aAdded frame &r%jasToString({_loc})%"
+	cancel event

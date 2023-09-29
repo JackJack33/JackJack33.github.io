@@ -1,0 +1,326 @@
+on load:
+	set {pref} to "j.alc"
+	send "&7[%{pref}%&7] Initializing Jack's Alchemy..." to all players where [input is an op]
+	set {wm} to "Jack's Alchemy Potion"
+	set {_loop::*} to indexes of {%{pref}%.effects::*}
+	loop {_loop::*}:
+		delete {%{pref}%.effects::%loop-value%::*}
+	delete {%{pref}%.potions::*}
+
+	set {%{pref}%.ingredient::1} to cPI("69deff", "&bElectrolytic Solution", false)
+	set {%{pref}%.ingredient::2} to cPI("ffc369", "&bOil of Vitriol", false)
+	set {%{pref}%.ingredient::3} to cPI("ff9ef4", "&bVolatilium", false)
+	register new shapeless recipe for {%{pref}%.ingredient::1} using water bottle, bonemeal, and glowstone dust with id "%{pref}%_elec"
+	register new shapeless recipe for {%{pref}%.ingredient::2} using water bottle, blaze powder, and gunpowder with id "%{pref}%_sulfuric"
+	register new shapeless recipe for {%{pref}%.ingredient::3} using water bottle, chorus fruit, and redstone dust with id "%{pref}%_volatile"
+
+	register new shapeless recipe for cPI("5ee1e0", "&eRecall Potion") using water bottle, ender pearl, and sugar with id "%{pref}%_recall"
+	register new shapeless recipe for cPI("6800a3", "&eReturn Potion") using water bottle, ender pearl, bone, bone, and bone with id "%{pref}%_return"
+	register new shapeless recipe for cPI("00b2ff", "&eWater Walking Potion") using water bottle, lily pad, lily pad, and scute with id "%{pref}%_waterwalk"
+	register new shapeless recipe for cPI("ffa100", "&eLava Walking Potion") using water bottle, crying obsidian, and fire charge with id "%{pref}%_lavawalk"
+	register new shapeless recipe for cPI("fffa5e", "&eShine Potion") using {%{pref}%.ingredient::1}, glowstone dust, glowstone dust, and sugar with id "%{pref}%_shine"
+	register new shapeless recipe for cPI("ffd500", "&eAbsorption Potion") using {%{pref}%.ingredient::1}, gold ingot, glowstone dust, and sugar with id "%{pref}%_absorp"
+	register new shapeless recipe for cPI("ff7b00", "&eInferno Potion") using {%{pref}%.ingredient::2}, blaze powder, fire charge, and gunpowder with id "%{pref}%_inferno"
+	register new shapeless recipe for cPI("636363", "&eHunter Potion") using {%{pref}%.ingredient::2}, arrow, flint, and gunpowder with id "%{pref}%_hunter"
+	register new shapeless recipe for cPI("b60055", "&eLifesteal Potion") using {%{pref}%.ingredient::2}, crimson fungus, bone, and gunpowder with id "%{pref}%_lifesteal"
+	register new shapeless recipe for cPI("00e855", "&eTitan Potion") using {%{pref}%.ingredient::3}, crying obsidian, rabbit's foot, gold ingot, and slimeball with id "%{pref}%_titan"
+	register new shapeless recipe for cPI("9f00e8", "&eRainbow Potion") using water bottle, red dye, yellow dye, lime dye, blue dye, and purple dye with id "%{pref}%_rainbow"
+	register new shapeless recipe for cPI("ffd745", "&eMidas Potion") using {%{pref}%.ingredient::2}, gold ingot, gold ingot, and book with id "%{pref}%_midas"
+	register new shapeless recipe for cPI("9fff45", "&eFarming Potion") using {%{pref}%.ingredient::1}, wheat, carrot, gold ingot, and glowstone dust with id "%{pref}%_farming"
+	register new shapeless recipe for cPI("0000ff", "&eCandle Potion") using {%{pref}%.ingredient::2}, slimeball, string, and bone with id "%{pref}%_candle"
+	register new shapeless recipe for cPI("00ff00", "&eVeridi Potion") using {%{pref}%.ingredient::1}, {%{pref}%.ingredient::2}, and {%{pref}%.ingredient::3} with id "%{pref}%_green"
+	
+	send "&7[%{pref}%&7] Done, %size of {%{pref}%.potions::*}% &7potions & recipes loaded." to all players where [input is an op]
+
+command /jacksalchemyhelp:
+	trigger:
+		send formatted "&eJack's Alchemy recipes, commands, & info can be viewed at &6&n<link:https:://jackjack.club/potions>jackjack.club/potions"
+
+command /viewpotions [<integer>]:
+	permission: op
+	trigger:
+		set {_tar} to arg-1 ? 1
+		open virtual chest inventory with size 6 named "&8Potions List &cpg. %{_tar}%" to player
+		loop 56 times:
+			delete {_i}
+			set {_math} to loop-number + (56 * ({_tar} - 1))
+			set {_i} to {%{pref}%.potions::%{_math}%}
+			set {_lore::*} to lore of {_i}
+			format gui slot (loop-number - 1) of player with {_i} with lore {_lore::*}, "", and "&cID: %{_math}%" to run:
+				give player {_i}
+
+function cPI(col: string = "ffffff", name: string = "&fCustom Potion", g: boolean = true) :: item type:
+	set {_int} to hexToDecimal(reverseString({_col}))
+	set {_i} to potion
+	add "{HideFlags:63,CustomPotionColor:%{_int}%}" to nbt of {_i}
+	if {_g} is true:
+		add "{Enchantments:[{id:""minecraft:protection"",lvl:0s}]}" to nbt of {_i}
+	set name of {_i} to {_name}
+	set line 1 of lore of {_i} to "&7%{wm}%"
+	set {_nbt} to nbt compound of {_i}
+	set tag {pref} of {_nbt} to 1
+	set {_i} to {_i} with nbt {_nbt}
+	add {_i} to {%{pref}%.potions::*}
+	return {_i}
+
+function reverseString(str: string) :: string:
+	set {_split::*} to {_str} split at ""
+	set {_split::*} to reversed {_split::*}
+	set {_new} to join {_split::*}
+	return {_new}
+
+function hexToDecimal(in: string) :: integer:
+	set {_conv} to "0123456789abcdef"
+	set {_split::*} to {_in} split at ""
+	loop (size of {_split::*} - 1) times:
+		set {_a} to (index of {_split::%loop-number%} in {_conv}) - 1
+		add {_a}*(16^(loop-number - 1)) to {_total}
+	return {_total}
+
+on consume of potion:
+	set {_nbt} to nbt compound of player's tool
+	set {_t} to tag "tag;%{pref}%" of {_nbt}
+	{_t} = 1
+	set {_n} to uncolored name of player's tool
+	
+	if {_n} contains "recall":
+		if player's bed is set:
+			teleport player to player's bed
+			play sound "entity.enderman.teleport" at location of player
+			play sound "entity.enderman.teleport" at location of player's bed
+			remove 1 of player's tool from player's tool
+			give player 1 empty bottle
+		else:
+			play sound "entity.enderman.hurt" at location of player
+			cancel event
+	
+	else if {_n} contains "return":
+		if {%{pref}%.death::%player's uuid%} is set:
+			teleport player to {%{pref}%.death::%player's uuid%}
+			play sound "entity.enderman.teleport" with pitch 0.8 at location of player
+			play sound "entity.enderman.teleport" with pitch 0.8 at {%{pref}%.death::%player's uuid%}
+			remove 1 of player's tool from player's tool
+			delete {%{pref}%.death::%player's uuid%}
+			give player 1 empty bottle
+		else:
+			play sound "entity.enderman.hurt" with pitch 0.8 at location of player
+			cancel event
+
+	else if {_n} contains "water walking":
+		if {%{pref}%.effects::ww::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::ww::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop (90*20) times:
+			if {%{pref}%.effects::ww::*} does not contain player's uuid:
+				stop loop
+			set {_x} to location of block below player
+			if block at {_x} is water:
+				set block at {_x} to blue stained glass
+				wait 1 tick
+				set block at {_x} to water
+			else:
+				wait 1 tick
+		remove player's uuid from {%{pref}%.effects::ww::*}
+
+	else if {_n} contains "lava walking":
+		if {%{pref}%.effects::lw::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::lw::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop (90*20) times:
+			if {%{pref}%.effects::lw::*} does not contain player's uuid:
+				stop loop
+			set {_x} to location of block below player
+			if block at {_x} is lava:
+				set block at {_x} to orange stained glass
+				wait 1 tick
+				set block at {_x} to lava
+			else:
+				wait 1 tick
+		remove player's uuid from {%{pref}%.effects::lw::*}
+
+	else if {_n} contains "shine":
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		apply glowing 1 to player for 90 seconds
+
+	else if {_n} contains "absorption":
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		apply absorption 2 to player for 45 seconds
+
+	else if {_n} contains "inferno":
+		if {%{pref}%.effects::inf::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::inf::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop 45 times:
+			if {%{pref}%.effects::inf::*} does not contain player's uuid:
+				stop loop
+			set {_en::*} to all entities in radius 8 of player
+			set {_en1::*} to {_en::*} where [input's uuid is not player's uuid]
+			set {_en2::*} to {_en1::*} where [input is a living entity]
+			set {_en3::*} to {_en2::*} where [input is not an armor stand]
+			set {_en3::*} on fire
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::inf::*}
+
+	else if {_n} contains "hunter":
+		if {%{pref}%.effects::hnt::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::hnt::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop 90 times:
+			if {%{pref}%.effects::hnt::*} does not contain player's uuid:
+				stop loop
+			set {_en::*} to all entities where [distance between input and player < 50]
+			set {_en1::*} to {_en::*} where [input's uuid is not player's uuid]
+			set {_en2::*} to {_en1::*} where [input is a living entity]
+			set {_en3::*} to {_en2::*} where [input is not an armor stand]
+			loop {_en3::*}:
+				apply glowing 1 to loop-value-2 for 1 second
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::hnt::*}
+
+	else if {_n} contains "lifesteal":
+		if {%{pref}%.effects::lfs::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::lfs::*}
+		loop 90 times:
+			if {%{pref}%.effects::lfs::*} does not contain player's uuid:
+				stop loop
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::lfs::*}
+
+	else if {_n} contains "titan":
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		apply regeneration 1 to player for 90 seconds
+		apply resistance 3 to player for 90 seconds
+		apply jump boost 2 to player for 90 seconds
+		apply speed 2 to player for 90 seconds
+
+	else if {_n} contains "rainbow":
+		if {%{pref}%.effects::rnb::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::rnb::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop 90 times:
+			if {%{pref}%.effects::rnb::*} does not contain player's uuid:
+				stop loop
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::rnb::*}
+
+	else if {_n} contains "midas":
+		if {%{pref}%.effects::mid::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::mid::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop 90 times:
+			if {%{pref}%.effects::mid::*} does not contain player's uuid:
+				stop loop
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::mid::*}
+
+	else if {_n} contains "farming":
+		if {%{pref}%.effects::far::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::far::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop 90 times:
+			if {%{pref}%.effects::far::*} does not contain player's uuid:
+				stop loop
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::far::*}
+
+	else if {_n} contains "candle":
+		if {%{pref}%.effects::can::*} contains player's uuid:
+			cancel event
+			stop
+		add player's uuid to {%{pref}%.effects::can::*}
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		loop 90 times:
+			if {%{pref}%.effects::can::*} does not contain player's uuid:
+				stop loop
+			wait 1 second
+		remove player's uuid from {%{pref}%.effects::can::*}
+
+	else if {_n} contains "veridi":
+		remove 1 of player's tool from player's tool
+		give player 1 empty bottle
+		apply levitation 10 to player for 2 seconds
+		wait 50 ticks
+		set {_e} to tnt
+		create explosion of force 3 at player
+	else:
+		cancel event
+
+#
+# Extra Events
+#
+
+on death:
+	set {%{pref}%.death::%player's uuid%} to location of player
+	set {_loop::*} to indexes of {%{pref}%.effects::*}
+	loop {_loop::*}:
+		remove player's uuid from {%{pref}%.effects::%loop-value%::*}
+
+on damage:
+	attacker is player
+	{%{pref}%.effects::lfs::*} contains attacker's uuid
+	chance of 50%:
+		heal attacker by (0.5 * damage)
+		play sound "entity.wither.hurt" at pitch 2 at location of attacker
+
+on break:
+	if {%{pref}%.effects::rnb::*} contains player's uuid:
+		set {_t::*} to "red", "orange", "yellow", "lime", "green", "light blue", "cyan", "blue", "purple", "magenta", "pink", "brown", "white", "light gray", "gray", and "black"
+		set {_i} to "%random element of {_t::*}% dye" parsed as item
+		drop 1 of {_i} at event-block
+
+	else if {%{pref}%.effects::mid::*} contains player's uuid:
+		chance of 20%:
+			drop 1 gold nugget at event-block
+
+# bro idk what skript is on but farming was so hard to code
+# "%event-block%" contains "ripe", "melon", or "pumpkin"
+# doesn't work ????
+
+	else if {%{pref}%.effects::far::*} contains player's uuid:
+		set {_workaround::*} to "ripe", "melon", and "pumpkin"
+		loop {_workaround::*}:
+			if "%event-block%" contains loop-value:
+				set {_c} to 1
+		if {_c} = 1:
+			chance of 50%:
+				set {_i::*} to drops of event-block
+				drop {_i::*} at event-block
+
+on spawn:
+	{%{pref}%.spawning} is not set
+	event-entity is a monster
+	set {_p::*} to all players in radius 50 of event-location
+	loop {_p::*}:
+		{%{pref}%.effects::can::*} contains loop-value's uuid
+		chance of 50%:
+			set {%{pref}%.spawning} to true
+			spawn (type of event-entity) at location of event-entity
+			play sound "entity.zombie.infect" at location of event-entity
+			delete {%{pref}%.spawning}
